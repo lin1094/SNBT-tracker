@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>UTBK English Curriculum Tracker</title>
+<link rel="stylesheet" href="style.css"><link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+  --bg:#f4f6f9; --surface:#ffffff; --ink:#17212c; --muted:#5a6776; --line:#d9dfe7;
+  --accent:#1d6a8a; --accent-soft:#dcecf3; --done:#2f7d52; --warn:#b4531f;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#10161d; --surface:#18212b; --ink:#e8edf2; --muted:#9aa8b6; --line:#2b3745;
+    --accent:#5eb3d1; --accent-soft:#1c3340; --done:#5cc08a; --warn:#e58a55;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#10161d; --surface:#18212b; --ink:#e8edf2; --muted:#9aa8b6; --line:#2b3745;
+  --accent:#5eb3d1; --accent-soft:#1c3340; --done:#5cc08a; --warn:#e58a55;
+}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.5 Figtree,system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1040px;margin:0 auto;padding:22px 18px 40px}
+header{display:flex;flex-wrap:wrap;gap:14px 28px;align-items:flex-end;justify-content:space-between;margin-bottom:14px}
+h1{font:700 28px/1.15 "Bricolage Grotesque",Figtree,system-ui,sans-serif;margin:0 0 4px;letter-spacing:-.01em}
+.sub{margin:0;color:var(--muted);max-width:52ch}
+.meta{display:flex;gap:10px;flex-wrap:wrap}
+.meta label{display:flex;flex-direction:column;font-size:12px;color:var(--muted);gap:3px}
+.meta input{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:6px 8px;width:170px}
+.meta input[type=date]{width:150px}
+.overall{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:16px}
+.overall-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px}
+.big{font:700 26px/1 "Bricolage Grotesque",Figtree,sans-serif}
+.big small{font:500 14px Figtree,sans-serif;color:var(--muted);margin-left:6px}
+.seg{display:flex;gap:4px}
+.seg div{flex:1;min-width:0}
+.seg .bar{height:12px;background:var(--accent-soft);border-radius:3px;overflow:hidden}
+.seg .fill{height:100%;background:var(--accent);width:0;transition:width .25s}
+.seg .bar.full .fill{background:var(--done)}
+.seg span{display:block;font-size:11px;color:var(--muted);margin-top:4px;text-align:center}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.grid{grid-template-columns:1fr}.meta input{width:100%}}
+.card{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:12px 14px 12px}
+.card.complete{border-left-color:var(--done)}
+.card h2{font:700 17px/1.25 "Bricolage Grotesque",Figtree,sans-serif;margin:0;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.card h2 .cnt{font:600 12px Figtree,sans-serif;color:var(--muted);white-space:nowrap}
+.goal{margin:3px 0 8px;font-size:13px;color:var(--muted)}
+.start{font:600 11px Figtree,sans-serif;color:var(--accent);background:var(--accent-soft);padding:1px 7px;border-radius:99px;margin-left:6px;vertical-align:2px}
+ul{list-style:none;margin:0;padding:0}
+li label{display:flex;gap:9px;align-items:flex-start;padding:5px 0;cursor:pointer;border-top:1px solid var(--line)}
+li:first-child label{border-top:0}
+li input{margin-top:3px;width:16px;height:16px;accent-color:var(--done);flex:none}
+li b{font-weight:600;display:block;font-size:14px}
+li em{font-style:normal;color:var(--muted);font-size:12.5px;display:block}
+li input:checked + span b{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
+.score{display:flex;align-items:center;gap:8px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);font-size:13px;color:var(--muted)}
+.score input{width:64px;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:4px 6px}
+.score .ok{color:var(--done);font-weight:600}
+.score .low{color:var(--warn);font-weight:600}
+.rules{margin-top:12px;font-size:13px;color:var(--muted)}
+.actions{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+button{font:600 13px Figtree,sans-serif;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:7px 12px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media print{
+  body{background:#fff;color:#000;font-size:11px}
+  .wrap{padding:0;max-width:none}
+  .actions,.start{display:none}
+  .card,.overall{break-inside:avoid;border-color:#999}
+  .grid{gap:7px}
+  li label{padding:2px 0}
+  h1{font-size:20px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <a class="back" href="index.html">← Home</a><h1>UTBK English: curriculum tracker</h1>
+      <p class="sub">Literasi Bahasa Inggris, built from the ground up. Tick each topic when the student can do it without help, then record the mastery check score.</p>
+    </div>
+    <div class="meta">
+      <label>Student<input id="name" type="text" placeholder="Name"></label>
+      <label>Start date<input id="start" type="date"></label>
+    </div>
+  </header>
+
+  <section class="overall" id="roster">
+    <h2 style="margin:0 0 6px;font-size:17px">Students’ SNBT progress</h2>
+    <p class="sub" style="margin-bottom:8px">Ask a student to open student.html, tap “Buat kode”, and send you the code. Paste it here. Pasting a new code from the same student updates their row.</p>
+    <textarea id="rc" rows="2" placeholder="Paste a student’s code here"></textarea>
+    <div class="actions"><button id="radd" type="button">Add / update student</button>
+    <label class="fld" style="flex-direction:row;align-items:center;gap:6px">Curriculum tracker for: <select id="who"></select></label></div>
+    <div class="tw" id="rt" style="margin-top:10px"></div>
+  </section>
+
+  <section class="overall" aria-label="Overall progress">
+    <div class="overall-top">
+      <div class="big"><span id="pct">0%</span><small id="tally">0 of 0 topics</small></div>
+    </div>
+    <div class="seg" id="seg"></div>
+  </section>
+
+  <main class="grid" id="grid"></main>
+
+  <p class="rules">Move to the next phase when the mastery check reaches 75% or higher. Below that, review the error log and retest. The exam has 20 reading questions in the English subtest, so confirm the official time allowance on the SNPMB site before setting pacing targets.</p>
+
+  <div class="actions">
+    <button id="print" type="button">Print this page</button>
+    <button id="reset" type="button">Clear all progress</button>
+  </div>
+</div>
+
+<script>
+var PHASES = [
+  {n:"Phase 0: Foundations", goal:"Know the building blocks of English words and sentences.", start:true, items:[
+    ["Nouns","proper, common, countable, uncountable"],
+    ["Verbs","action, linking, auxiliary (helping)"],
+    ["Adjectives and adverbs","modifiers, comparatives, superlatives"],
+    ["Pronouns","subjective, objective, possessive, relative"],
+    ["Prepositions and conjunctions","connecting words and logic markers: because, although, however"],
+    ["Word building","prefixes, suffixes, word families"],
+    ["Receptive vocabulary","recognize common words in a text; start the Academic Word List"]
+  ]},
+  {n:"Phase 1: Sentence mechanics", goal:"Decode long, complex sentences.", items:[
+    ["Subject and predicate","find who or what the sentence is about"],
+    ["Subject, verb, object (S-V-O) parsing","reduce a long sentence to its core"],
+    ["Clauses","relative, noun, and reduced clauses"],
+    ["Active and passive voice","who did what to whom"],
+    ["Connectors and contrast signals","although, whereas, nevertheless"],
+    ["Verb and sentence agreement","used as a parsing clue"]
+  ]},
+  {n:"Phase 2: Core reading", goal:"Read efficiently and find information fast.", items:[
+    ["Skimming and scanning","basic reading techniques"],
+    ["Vocabulary in context","infer meaning from surrounding words"],
+    ["Main idea and topic","what the whole text is about"],
+    ["Finding detailed information","locate facts quickly"],
+    ["Reference and pronouns","what “it”, “this”, “they” point to"],
+    ["Text types","expository, argumentative, narrative or personal, data-linked"]
+  ]},
+  {n:"Phase 3: Reasoning", goal:"Think critically: inference, intent, argument.", items:[
+    ["Author’s stance","purpose, tone, opinion, attitude"],
+    ["Statement checking","true/false, stated vs. unstated, fact vs. opinion"],
+    ["Inference family","inference, conclusion, prediction"],
+    ["Meaning preservation","summary, restatement, equal meaning"],
+    ["Argument analysis","strengthen, weaken, flaw in reasoning"]
+  ]},
+  {n:"Phase 4: Structure and synthesis", goal:"Handle multi-paragraph and two-text tasks.", items:[
+    ["Organization of ideas","what job each paragraph does"],
+    ["Inter-paragraph relations","contrast, elaboration, evidence"],
+    ["Coherence and sentence insertion","where a sentence belongs"],
+    ["Comparing two texts","similarities, differences, combined inference"]
+  ]},
+  {n:"Phase 5: Exam readiness", goal:"Build stamina, pacing, and resistance to traps.", items:[
+    ["Distractor anatomy","too broad, too narrow, contradiction, true but not in the text"],
+    ["Time-boxing and pacing","set a time budget per question"],
+    ["Mixed practice, untimed","with full review"],
+    ["Mixed practice, soft timing","about 1.5 times the target"],
+    ["Mixed practice, full timing","exam conditions"],
+    ["Full 160-question simulation","English section in context"]
+  ]},
+  {n:"Running tracks", goal:"Keep these going alongside every phase.", items:[
+    ["Vocabulary","10 to 15 Academic Word List items per week, spaced review"],
+    ["Error log","question type, cause, fix, for every wrong answer"],
+    ["Spiral review","10-minute cumulative retrieval set each session"]
+  ], noScore:true}
+];
+
+var KEY = "utbk-english-tracker-v1"; var CUR=""; try{CUR=localStorage.getItem("snbt-cur")||""}catch(e){} function K(){return KEY+(CUR?":"+CUR:"")}
+var S = {c:{}, s:{}, name:"", start:""};
+
+function load(){
+  try{
+    var raw = localStorage.getItem(K());
+    if(raw){ var o = JSON.parse(raw); S.c=o.c||{}; S.s=o.s||{}; S.name=o.name||""; S.start=o.start||""; }
+  }catch(e){}
+}
+function save(){
+  try{ localStorage.setItem(K(), JSON.stringify(S)); }catch(e){}
+}
+function esc(t){ return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function build(){
+  var g = document.getElementById("grid"), seg = document.getElementById("seg"), h = "", sh = "";
+  PHASES.forEach(function(p,i){
+    h += '<section class="card" id="card'+i+'"><h2><span>'+esc(p.n)+(p.start?'<span class="start">start here</span>':'')+'</span><span class="cnt" id="cnt'+i+'"></span></h2>';
+    h += '<p class="goal">'+esc(p.goal)+'</p><ul>';
+    p.items.forEach(function(it,j){
+      var id = i+"-"+j;
+      h += '<li><label><input type="checkbox" data-id="'+id+'"><span><b>'+esc(it[0])+'</b><em>'+esc(it[1])+'</em></span></label></li>';
+    });
+    h += '</ul>';
+    if(!p.noScore){
+      h += '<div class="score"><label for="sc'+i+'">Mastery check score</label><input id="sc'+i+'" type="number" min="0" max="100" inputmode="numeric" data-score="'+i+'"><span>%</span><span id="st'+i+'"></span></div>';
+    }
+    h += '</section>';
+    if(!p.noScore){
+      sh += '<div><div class="bar" id="bar'+i+'"><div class="fill" id="fill'+i+'"></div></div><span>P'+i+'</span></div>';
+    }
+  });
+  g.innerHTML = h; seg.innerHTML = sh;
+}
+
+function refresh(){
+  var total=0, done=0;
+  document.getElementById("name").value = S.name;
+  document.getElementById("start").value = S.start;
+  PHASES.forEach(function(p,i){
+    var n=p.items.length, d=0;
+    p.items.forEach(function(_,j){
+      var id=i+"-"+j, cb=document.querySelector('input[data-id="'+id+'"]');
+      cb.checked = !!S.c[id];
+      if(S.c[id]) d++;
+    });
+    total+=n; done+=d;
+    document.getElementById("cnt"+i).textContent = d+" of "+n;
+    document.getElementById("card"+i).classList.toggle("complete", d===n);
+    var fill=document.getElementById("fill"+i);
+    if(fill){
+      fill.style.width = (100*d/n)+"%";
+      document.getElementById("bar"+i).classList.toggle("full", d===n);
+    }
+    var sc=document.getElementById("sc"+i);
+    if(sc){
+      var v=S.s[i]; sc.value = (v===undefined?"":v);
+      var st=document.getElementById("st"+i);
+      if(v===undefined||v===""){ st.textContent=""; st.className=""; }
+      else if(Number(v)>=75){ st.textContent="Ready for the next phase"; st.className="ok"; }
+      else { st.textContent="Review and retest"; st.className="low"; }
+    }
+  });
+  document.getElementById("pct").textContent = Math.round(100*done/total)+"%";
+  document.getElementById("tally").textContent = done+" of "+total+" topics";
+}
+
+document.addEventListener("change", function(e){
+  var t=e.target;
+  if(t.dataset.id){ if(t.checked) S.c[t.dataset.id]=1; else delete S.c[t.dataset.id]; }
+  else if(t.dataset.score!==undefined){
+    var v=t.value.trim();
+    if(v===""){ delete S.s[t.dataset.score]; } else { S.s[t.dataset.score]=Math.max(0,Math.min(100,Number(v))); }
+  }
+  else if(t.id==="name"){ S.name=t.value; }
+  else if(t.id==="start"){ S.start=t.value; }
+  save(); refresh();
+});
+document.getElementById("print").addEventListener("click", function(){ window.print(); });
+document.getElementById("reset").addEventListener("click", function(){
+  if(confirm("Clear all ticks, scores, and details on this device?")){
+    S={c:{},s:{},name:"",start:""}; save(); refresh();
+  }
+});
+
+load(); build(); refresh();
+</script>
+<script src="data.js"></script>
+<script>
+var D=window.SNBT,RK="snbt-roster-v1",R={};
+try{R=JSON.parse(localStorage.getItem(RK))||{}}catch(e){}
+function bits(m){for(var c=0;m;m>>=1)c+=m&1;return c}
+function rsave(){try{localStorage.setItem(RK,JSON.stringify(R))}catch(e){}}
+function rrender(){
+ var h='<table><thead><tr><th>Student</th><th>Total</th>'+D.sheets.map(function(s){return'<th>'+s.id+'</th>'}).join('')+'<th>Latest tryout</th><th>Needs attention</th><th></th></tr></thead><tbody>';
+ Object.keys(R).forEach(function(n){var o=R[n],d=0,t=0,cells="",weak=[],to="";
+  D.sheets.forEach(function(s){var r=(o.r||{})[s.id]||{},sd=0;
+   s.items.forEach(function(it,i){var a=r[i];if(!a)return;sd+=a[0]+bits(a[1]);if(a[2]==1||a[2]==2)weak.push(s.id+": "+it.t)});
+   d+=sd;t+=s.items.length*6;cells+='<td>'+Math.round(100*sd/(s.items.length*6))+'%</td>'});
+  (o.t||[]).forEach(function(r){var p=0,c=0;D.to.forEach(function(x,j){var v=(r.s||[])[j];if(v!=null){p+=v/x[1];c++}});if(c)to=(r.n||"TO")+": "+Math.round(100*p/c)+"%"});
+  h+='<tr><td>'+esc(n)+'</td><td><b>'+Math.round(100*d/t)+'%</b></td>'+cells+'<td>'+esc(to)+'</td><td>'+(weak.length?'<details><summary>'+weak.length+' topics</summary><small>'+weak.map(function(w){return esc(w)}).join('<br>')+'</small></details>':'–')+'</td><td><button type="button" data-del="'+encodeURIComponent(n)+'">Remove</button></td></tr>'});
+ document.getElementById("rt").innerHTML=Object.keys(R).length?h+'</tbody></table>':'<p class="sub" style="padding:10px">No students yet.</p>';
+ document.getElementById("who").innerHTML='<option value="">(no student)</option>'+Object.keys(R).map(function(n){return'<option'+(n===CUR?' selected':'')+'>'+esc(n)+'</option>'}).join('')}
+document.getElementById("radd").addEventListener("click",function(){
+ try{var o=JSON.parse(decodeURIComponent(escape(atob(document.getElementById("rc").value.trim()))));if(!o.r)throw 0;
+  R[(o.name||"").trim()||"No name"]=o;rsave();document.getElementById("rc").value="";rrender()}
+ catch(e){alert("This code is not valid. Ask the student to create a new one.")}});
+document.getElementById("who").addEventListener("change",function(){CUR=this.value;try{localStorage.setItem("snbt-cur",CUR)}catch(e){}
+ S={c:{},s:{},name:CUR,start:""};load();refresh()});
+document.addEventListener("click",function(e){var n=e.target.dataset.del;
+ if(n!==undefined&&confirm("Remove this student from the list?")){delete R[decodeURIComponent(n)];rsave();rrender()}});
+rrender();
+</script>
+</body>
+</html>
